@@ -1,0 +1,18 @@
+name: beacon-io
+channels: [conda-forge]
+dependencies:
+  - python=3.10.13
+  - pip
+  - pip:
+      - pymc==5.25.1
+      - arviz==0.23.4
+      - numpy==1.26.2
+      - scipy==1.11.4
+      - pandas==2.1.4
+      - scikit-learn==1.3.2
+      - statsmodels==0.14.6
+      - lifelines==0.30.0
+      - matplotlib==3.8.2
+      - seaborn==0.13.0
+      - joblib==1.3.2
+      - openpyxl==3.1.5

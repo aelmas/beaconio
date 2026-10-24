@@ -1,0 +1,91 @@
+# =============================================================================
+# BEACON-IO .gitignore
+# =============================================================================
+
+# --- Manuscript (kept local only, never synced to the remote) ----------------
+manuscript/
+manuscript_huanglab_version/
+
+# --- Raw data (downloaded by pipeline, too large for git) -------------------
+data/raw/
+data/processed/
+data/external/
+
+# Keep directory stubs
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# --- Large intermediate outputs (regenerable) --------------------------------
+analysis/out/beacon_edd/fast_screen_*.csv
+analysis/out/beacon_edd/beacon_edd_*_spearman*.csv
+
+# MCMC run logs
+analysis/out/beacon_mcmc_run.log
+*.log
+
+# --- Python -----------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.installed.cfg
+lib/
+lib64/
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoint
+
+# --- Testing / coverage ------------------------------------------------------
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# --- IDEs / editors ----------------------------------------------------------
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# --- Snakemake ---------------------------------------------------------------
+.snakemake/
+*.smk.py
+
+# --- LaTeX auxiliary files (tracked: .tex/.bib/.pdf/.csv; ignored: build junk) -
+manuscript/*.aux
+manuscript/*.bbl
+manuscript/*.blg
+manuscript/*.out
+manuscript/*.log
+manuscript/*.toc
+manuscript/*.lof
+manuscript/*.lot
+manuscript/*.fls
+manuscript/*.fdb_latexmk
+manuscript/*.synctex.gz
+
+# --- Misc --------------------------------------------------------------------
+*.tmp
+*.bak
+*.orig
+nohup.out
+
+# --- Editor/agent session logs (kept local only, never committed) --------------
+SESSION_HISTORY*
+session_history*

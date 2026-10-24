@@ -1,0 +1,35 @@
+cff-version: 1.2.0
+message: "If you use BEACON-IO in your research, please cite both the BEACON-IO preprint and the original BEACON paper."
+type: software
+title: "BEACON-IO: Bayesian Expression-Driven Dependencies at the Tumor-Immune Interface"
+abstract: >
+  BEACON-IO extends the BEACON framework (Elmas et al. GigaScience 2026) to the
+  tumor-immune interface, identifying expression-driven cancer dependencies that
+  are modulated by the immune microenvironment. Bayesian MCMC estimation of
+  expression-dependency correlations across DepMap cell lines, stratified by
+  immune context, enables rational prioritization of ICB combination targets.
+authors:
+  - family-names: Elmas
+    given-names: Abdulkadir
+    orcid: "https://orcid.org/0000-0000-0000-0000"  # update with your ORCID
+version: "0.1.0"
+date-released: "2026-04-22"
+license: MIT
+repository-code: "https://github.com/aelmas/beaconio"
+keywords:
+  - cancer genomics
+  - immunotherapy
+  - CRISPR
+  - DepMap
+  - Bayesian statistics
+  - tumor microenvironment
+  - expression-driven dependency
+  - BEACON
+references:
+  - type: article
+    title: "BEACON: Bayesian Estimation of Correlation Coefficients for identifying expression-driven dependencies in cancer"
+    authors:
+      - family-names: Elmas
+        given-names: Abdulkadir
+    journal: "GigaScience"
+    year: 2026

@@ -1,0 +1,32 @@
+OncotreeLineage,immune_hot,immune_cold,hot_frac_%
+Skin,103,17,14.7
+Lung,85,129,12.1
+CNS/Brain,61,39,8.7
+Head and Neck,39,35,5.5
+Soft Tissue,38,38,5.4
+Pancreas,37,18,5.3
+Bowel,33,53,4.7
+Bone,31,24,4.4
+Esophagus/Stomach,29,48,4.1
+Fibroblast,29,10,4.1
+Kidney,29,23,4.1
+Breast,25,45,3.6
+Biliary Tract,24,20,3.4
+Ovary/Fallopian Tube,23,44,3.3
+Bladder/Urinary Tract,22,15,3.1
+Thyroid,18,4,2.6
+Pleura,17,5,2.4
+Uterus,13,30,1.8
+Peripheral Nervous System,11,34,1.6
+Liver,7,20,1.0
+Cervix,6,14,0.9
+Testis,5,5,0.7
+Prostate,5,8,0.7
+Ampulla of Vater,4,0,0.6
+Eye,3,20,0.4
+Hair,2,0,0.3
+Adrenal Gland,1,1,0.1
+Muscle,1,4,0.1
+Embryonal,1,0,0.1
+Vulva/Vagina,1,1,0.1
+Other,0,1,0.0
