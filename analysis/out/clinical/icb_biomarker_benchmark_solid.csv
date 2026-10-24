@@ -1,0 +1,7 @@
+biomarker,auc,n_genes,cohort,signature
+BEACON-IO (score),0.5416666666666667,32,Hugo_2016,solid_tumor_only
+BEACON-IO (CV-LR),,32,Hugo_2016,solid_tumor_only
+PD-L1 (CD274),0.5520833333333333,1,Hugo_2016,solid_tumor_only
+IFNg-GEP (Ayers),0.5208333333333333,18,Hugo_2016,solid_tumor_only
+Cytolytic (CYT),0.65625,2,Hugo_2016,solid_tumor_only
+IMPRES,0.8020833333333334,15,Hugo_2016,solid_tumor_only

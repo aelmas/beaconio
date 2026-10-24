@@ -1,0 +1,217 @@
+# =============================================================================
+# BEACON-IO configuration
+# =============================================================================
+
+# -- Paths -------------------------------------------------------------------
+output_dir: analysis/out
+data_dir: data/raw
+processed_dir: data/processed
+reference_dir: reference
+
+# -- DepMap data (https://depmap.org/portal/) ---------------------------------
+depmap:
+  release: "24Q4"                          # DepMap quarterly release
+  crispr_file: "CRISPRGeneEffect.csv"      # Chronos-corrected dependency scores
+  expression_file: "OmicsExpressionProteinCodingGenesTPMLogp1.csv"
+  proteomics_file: "OmicsProteomicsMatrixNormalized.csv"  # gygi lab MS data
+  cell_line_info: "Model.csv"
+  copy_number_file: "OmicsCNGene.csv"
+  mutation_file: "OmicsSomaticMutations.csv"
+
+# -- PRISM drug sensitivity (https://depmap.org/repurposing/) -----------------
+prism:
+  sensitivity_file: "PRISM_Repurposing_Secondary_Logfold_Change.csv"
+  drug_info_file: "PRISM_Repurposing_Drug_Info.csv"
+  treatment_info: "PRISM_Repurposing_Secondary_Treatment_Info.csv"
+
+# -- TCGA (via UCSC Xena hubs) ------------------------------------------------
+tcga:
+  # Expression from toil hub (TCGA + GTEx reprocessed)
+  expression_url: "https://toil-xena-hub.s3.us-east-1.amazonaws.com/download/tcga_RSEM_gene_tpm.gz"
+  expression_file: "tcga_RSEM_gene_tpm.gz"
+  # Clinical phenotype from GDC hub
+  clinical_url: "https://gdc-hub.s3.us-east-1.amazonaws.com/download/GDC-PANCAN.basic_phenotype.tsv"
+  clinical_file: "GDC-PANCAN.basic_phenotype.tsv"
+  # Survival from toil hub
+  survival_url: "https://toil-xena-hub.s3.us-east-1.amazonaws.com/download/TCGA_survival_data"
+  survival_file: "TCGA_survival_data"
+  # Survival also from GDC hub (backup)
+  survival_gdc_url: "https://gdc-hub.s3.us-east-1.amazonaws.com/download/GDC-PANCAN.survival.tsv"
+  survival_gdc_file: "GDC-PANCAN.survival.tsv"
+  cancer_types:                             # ICB-relevant TCGA cohorts
+    - SKCM   # melanoma
+    - LUAD   # lung adenocarcinoma
+    - LUSC   # lung squamous
+    - KIRC   # clear cell RCC
+    - BLCA   # bladder
+    - HNSC   # head and neck
+    - STAD   # gastric
+    - UCEC   # endometrial
+    - COAD   # colorectal
+    - LIHC   # hepatocellular
+
+# -- Public ICB clinical cohorts ----------------------------------------------
+# NOTE (submitted scope): only the Hugo 2016 melanoma cohort (GSE78220) is
+# analyzed in the manuscript. The remaining cohorts are enumerated for a
+# planned multi-cohort meta-analysis (evidence tier E5) and are NOT used here.
+icb_cohorts:
+  # Melanoma anti-PD1
+  - name: "Hugo_2016_melanoma"
+    source: "GEO:GSE78220"
+    cancer: "SKCM"
+    therapy: "anti-PD1"
+    n_patients: 28
+    data_types: ["RNA-seq", "WES", "clinical"]
+
+  - name: "Riaz_2017_melanoma"
+    source: "GEO:GSE91061"
+    cancer: "SKCM"
+    therapy: "anti-PD1"
+    n_patients: 51
+    data_types: ["RNA-seq", "WES", "clinical"]
+
+  - name: "Liu_2019_melanoma"
+    source: "cBioPortal:mel_dfci_2019"
+    cancer: "SKCM"
+    therapy: "anti-PD1"
+    n_patients: 144
+    data_types: ["RNA-seq", "WES", "clinical"]
+
+  - name: "VanAllen_2015_melanoma"
+    source: "dbGaP:phs000452"
+    cancer: "SKCM"
+    therapy: "anti-CTLA4"
+    n_patients: 110
+    data_types: ["WES", "clinical"]
+
+  # RCC anti-PD1
+  - name: "Miao_2018_RCC"
+    source: "cBioPortal:kirc_dfci_2018"
+    cancer: "KIRC"
+    therapy: "anti-PD1"
+    n_patients: 35
+    data_types: ["WES", "clinical"]
+
+  - name: "Braun_2020_RCC"
+    source: "cBioPortal:kirc_bms_2020"
+    cancer: "KIRC"
+    therapy: "anti-PD1"
+    n_patients: 592
+    data_types: ["RNA-seq", "WES", "clinical"]
+
+  # Bladder anti-PDL1
+  - name: "Mariathasan_2018_bladder"
+    source: "IMvigor210CoreBiologies"
+    cancer: "BLCA"
+    therapy: "anti-PDL1"
+    n_patients: 348
+    data_types: ["RNA-seq", "clinical"]
+
+  # Gastric anti-PD1
+  - name: "Kim_2018_gastric"
+    source: "GEO:GSE135222"
+    cancer: "STAD"
+    therapy: "anti-PD1"
+    n_patients: 45
+    data_types: ["RNA-seq", "WES", "clinical"]
+
+  # NSCLC anti-PD1/PDL1
+  - name: "Jung_2019_NSCLC"
+    source: "EGAS00001003437"
+    cancer: "LUAD"
+    therapy: "anti-PD1/PDL1"
+    n_patients: 60
+    data_types: ["RNA-seq", "WES", "clinical"]
+
+  - name: "Cho_2020_NSCLC"
+    source: "GEO:GSE126044"
+    cancer: "LUAD"
+    therapy: "anti-PD1"
+    n_patients: 42
+    data_types: ["RNA-seq", "clinical"]
+
+# -- Single-cell RNA-seq atlases (public) -------------------------------------
+# NOTE (submitted scope): single-cell compartment analysis (evidence tier E7)
+# is PLANNED and NOT performed in the submitted manuscript.
+singlecell:
+  - name: "Jerby-Arnon_2018_melanoma_ICB"
+    source: "GEO:GSE115978"
+    cancer: "SKCM"
+    description: "scRNA-seq of melanoma tumors pre/post ICB (31 tumors, ~7000 cells)"
+
+  - name: "Sade-Feldman_2018_melanoma_ICB"
+    source: "GEO:GSE120575"
+    cancer: "SKCM"
+    description: "scRNA-seq of TILs from melanoma patients on ICB (48 samples, ~16000 cells)"
+
+  - name: "Zhang_2021_panCancer_TME"
+    source: "zenodo:10.5281/zenodo.5461803"
+    cancer: "pan-cancer"
+    description: "Pan-cancer T cell atlas, 316 patients, 21 cancer types, ~400K cells"
+
+  - name: "Wu_2021_breast_ICB"
+    source: "GEO:GSE176078"
+    cancer: "BRCA"
+    description: "scRNA-seq of breast cancer TME, 26 patients"
+
+# -- BEACON parameters -------------------------------------------------------
+beacon:
+  # MCMC settings (2 chains x 1000 draws is well-powered for rho with ESS >1500)
+  n_chains: 2
+  n_draws: 1000
+  n_tune: 500
+  target_accept: 0.90
+  # Significance thresholds
+  rho_threshold: -0.25          # posterior median rho cutoff
+  rope_width: 0.1               # region of practical equivalence for H0: rho=0
+  hdi_prob: 0.95                # highest-density interval probability
+  fdr_threshold: 0.05
+  # Minimum cell lines per lineage
+  min_cell_lines: 7
+
+# -- Immune module parameters ------------------------------------------------
+# NOTE (submitted scope): the analysis in the manuscript uses a mean-expression
+# immune-signature score over the ESTIMATE immune gene set (see Methods), NOT a
+# full deconvolution. CIBERSORTx/MCPcounter/EPIC/xCell and TIDE are scaffolding
+# for planned extensions and are NOT used in the submitted results.
+immune:
+  deconvolution_method: "mean_immune_signature_score"  # ESTIMATE-immune-gene-subset mean (used); CIBERSORTx/MCPcounter/EPIC/xCell = planned, not used
+  immune_evasion_genesets:
+    - "HALLMARK_INTERFERON_GAMMA_RESPONSE"
+    - "HALLMARK_INFLAMMATORY_RESPONSE"
+    - "HALLMARK_IL6_JAK_STAT3_SIGNALING"
+    - "HALLMARK_COMPLEMENT"
+    - "KEGG_ANTIGEN_PROCESSING_AND_PRESENTATION"
+    - "GO_T_CELL_ACTIVATION"
+    - "GO_RESPONSE_TO_TYPE_I_INTERFERON"
+    - "REACTOME_PD1_SIGNALING"
+    - "REACTOME_MHC_CLASS_I_ANTIGEN_PROCESSING"
+  tide_url: "http://tide.dfci.harvard.edu"
+
+# -- Combination discovery parameters ----------------------------------------
+combination:
+  prism_ic50_threshold: -1.0     # log2 fold-change threshold for sensitivity
+  synergy_methods: ["bliss", "hsa"]
+  min_drug_targets_overlap: 2
+  # NOTE: PRISM drug-sensitivity correlation (tier E4) is used. DGIdb/DrugBank/
+  # ChEMBL/OpenTargets druggability annotation (tier E8) is PLANNED, not used.
+  druggability_sources:
+    - "DGIdb"
+    - "DrugBank"
+    - "ChEMBL"
+    - "OpenTargets"
+
+# -- Clinical validation parameters ------------------------------------------
+clinical:
+  survival_method: "cox_ph"      # cox_ph or kaplan_meier
+  response_categories:
+    responder: ["CR", "PR"]
+    non_responder: ["SD", "PD"]
+  biomarker_comparison:          # compare BEACON-IO against existing biomarkers
+    - "TMB"
+    - "PD-L1 (CPS)"
+    - "GEP (Ayers 2017)"
+    - "TIDE"
+    - "IMPRES"
+  cross_validation_folds: 5
+  bootstrap_iterations: 1000
