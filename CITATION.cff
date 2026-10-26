@@ -12,8 +12,8 @@ authors:
   - family-names: Elmas
     given-names: Abdulkadir
     orcid: "https://orcid.org/0000-0000-0000-0000"  # update with your ORCID
-version: "0.1.0"
-date-released: "2026-04-22"
+version: "0.1.1"
+date-released: "2026-10-26"
 license: MIT
 repository-code: "https://github.com/aelmas/beaconio"
 keywords:
