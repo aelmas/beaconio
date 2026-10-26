@@ -22,9 +22,10 @@ import anndata as ad
 import numpy as np
 import pandas as pd
 import scanpy as sc
+from statsmodels.stats.multitest import multipletests
 
 from beacon_io.config import CFG
-from beacon_io.utils import ensure_dir, get_logger
+from beacon_io.utils import get_logger
 
 log = get_logger(__name__)
 
@@ -205,7 +206,7 @@ def sc_differential_beacon_targets(
 
     df = pd.DataFrame(records)
     if not df.empty:
-        df["fdr"] = fdr_correction(df["pvalue"].values)
+        df["fdr"] = multipletests(df["pvalue"].values, method="fdr_bh")[1]
     return df
 
 

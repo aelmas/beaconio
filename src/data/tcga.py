@@ -12,7 +12,6 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 import requests
 from tqdm import tqdm
@@ -87,8 +86,6 @@ def _load_ensembl_to_symbol() -> dict[str, str]:
 
     # Build via mygene.info
     log.info("Building Ensembl-to-symbol mapping via mygene.info")
-    import requests as _req
-    ensembl_ids = []  # will be populated from expression
     # Fallback: strip version, use simple heuristic
     return {}
 

@@ -16,8 +16,8 @@ warnings.filterwarnings("ignore")
 import matplotlib
 
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt
 import matplotlib.gridspec as gridspec
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -176,7 +176,7 @@ def fig2_differential_edd():
     ax = axes[1]
     top20 = diff[sig].reindex(diff[sig]["delta_rho"].abs().sort_values(ascending=False).index).head(20)
     colors = ["#d73027" if d < 0 else "#4575b4" for d in top20["delta_rho"]]
-    bars = ax.barh(range(len(top20)), top20["delta_rho"], color=colors, edgecolor="white")
+    ax.barh(range(len(top20)), top20["delta_rho"], color=colors, edgecolor="white")
     ax.set_yticks(range(len(top20)))
     ax.set_yticklabels(top20["gene"], fontsize=8)
     ax.invert_yaxis()
@@ -255,7 +255,7 @@ def fig4_survival():
 
     # Load expression + survival (reuse ensembl mapping)
     sys.path.insert(0, "src")
-    from data.tcga import load_tcga_survival, load_tcga_clinical
+    from data.tcga import load_tcga_clinical, load_tcga_survival
     survival = load_tcga_survival()
     clinical = load_tcga_clinical()
     clinical["sample_15"] = clinical.index.str[:15]
@@ -314,7 +314,7 @@ def fig4_survival():
         try:
             lr = logrank_test(T_h[valid_h], T_l[valid_l], E_h[valid_h], E_l[valid_l])
             pval = lr.p_value
-        except:
+        except Exception:
             pval = np.nan
 
         ax.set_title(f"{gene} - {cancer}\nHR={row['cox_hr']:.2f}, p={pval:.1e}", fontsize=10)

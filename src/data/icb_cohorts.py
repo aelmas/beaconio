@@ -32,6 +32,7 @@ log = get_logger(__name__)
 def _download_geo_supp(geo_id: str, dest_dir: Path) -> Path:
     """Download GEO supplementary files for a given accession."""
     import tarfile
+
     import requests
 
     ensure_dir(dest_dir)

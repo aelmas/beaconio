@@ -156,7 +156,6 @@ def load_prism(data_dir: Path | None = None) -> tuple[pd.DataFrame, pd.DataFrame
     row_id = "ACH-XXXXXX::plate::screen::replicate"
     We pivot to cell_line x compound (broad_id) matrix, averaging replicates.
     """
-    import numpy as np
 
     data_dir = Path(data_dir or CFG["data_dir"]) / "prism"
     lfc_path = data_dir / "PRISM_Repurposing_24Q2_LFC.csv"
@@ -185,7 +184,7 @@ def load_prism(data_dir: Path | None = None) -> tuple[pd.DataFrame, pd.DataFrame
 
     # Filter to passing QC
     if "PASS" in lfc.columns:
-        lfc = lfc[lfc["PASS"] == True]
+        lfc = lfc[lfc["PASS"].eq(True)]
 
     # Pivot: average LFC across replicates -> cell_line x compound
     log.info("Pivoting PRISM to cell_line x compound matrix...")

@@ -9,14 +9,11 @@ Pipeline:
 
 from __future__ import annotations
 
-from pathlib import Path
-
 import numpy as np
 import pandas as pd
 import requests
 from scipy import stats
 
-from beacon_io.config import CFG
 from beacon_io.utils import fdr_correction, get_logger
 
 log = get_logger(__name__)
