@@ -11,7 +11,7 @@ abstract: >
 authors:
   - family-names: Elmas
     given-names: Abdulkadir
-    orcid: "https://orcid.org/0000-0000-0000-0000"  # update with your ORCID
+    orcid: "https://orcid.org/0000-0002-7999-5770"
 version: "0.1.1"
 date-released: "2026-10-26"
 license: MIT
