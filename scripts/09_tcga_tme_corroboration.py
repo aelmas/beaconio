@@ -9,16 +9,18 @@ in REAL TCGA tumors (which do have a TME), *after adjusting for cancer type
 (lineage)*. The prediction that distinguishes a genuine immune-context gene
 from a lineage artifact:
 
-  - lineage-driven hits (IRF4, MITF, SOX10; melanocyte program) should LOSE
-    their immune association once cancer type is included as a covariate;
-  - lineage-independent hits (TEAD3, USP18, BHLHE41, CDH1, ...) should RETAIN a
-    significant association with immune / cytolytic activity across cancer types.
+  - lineage-driven hits (IRF4, MITF, SOX10; melanocyte program) show a large
+    immune association on pooled z-scores that SHRINKS once expression and
+    predictor are z-scored within cancer type (the lineage adjustment);
+  - lineage-independent hits (TEAD3, SEMA4B, CDH1, ...) show similar betas in
+    both models.
 
 For each gene we regress its expression on the tumor immune score (and on the
-Rooney cytolytic-activity score, CYT) with and without a cancer-type covariate,
-using pooled TCGA tumors across the analysis cancer types. A background of
-random genes calibrates how often a gene is "immune-associated after lineage
-adjustment" by chance.
+Rooney cytolytic-activity score, CYT) in two OLS variants: unadjusted (pooled
+z-scores, between-type variance retained) and adjusted (within-cancer-type
+z-scores; that standardization is itself the lineage adjustment, so no further
+covariate is needed). A background of random genes calibrates how often a gene
+is "immune-associated after lineage adjustment" by chance.
 
 Output:
   - analysis/out/clinical/tcga_tme_corroboration.csv
@@ -56,19 +58,36 @@ def _zscore_within(df, value_col, group_col):
     return (df[value_col] - g.transform("mean")) / (g.transform("std") + 1e-9)
 
 
-def _fit(df, gene_col, predictor):
-    """Return (beta_unadj, p_unadj, beta_adj, p_adj) for gene ~ predictor,
-    without and with C(cancer_type)."""
-    sub = df[[gene_col, predictor, "cancer_type"]].dropna()
-    if sub[gene_col].std() < 1e-8 or sub[predictor].std() < 1e-8 or len(sub) < 50:
+def _zscore_pooled(series: pd.Series) -> pd.Series:
+    """Global (pooled) z-score: retains between-cancer-type variance."""
+    return (series - series.mean()) / (series.std() + 1e-9)
+
+
+def _fit(df, y_pooled, x_pooled, y_within, x_within):
+    """Unadjusted vs lineage-adjusted OLS, as a genuine contrast.
+
+    Unadjusted: globally (pooled) z-scored expression and predictor, y ~ x --
+    between-cancer-type variance (tissue-of-origin immune differences and
+    lineage means) is free to inflate the association.
+    Adjusted: both variables z-scored *within* cancer type, y ~ x -- this
+    within-type standardization IS the lineage adjustment; a further
+    C(cancer_type) covariate adds nothing because within-type residuals are
+    orthogonal to the type means.
+    Returns (beta_unadj, p_unadj, beta_adj, p_adj).
+    """
+    up = df[[y_pooled, x_pooled]].dropna()
+    aw = df[[y_within, x_within]].dropna()
+    if (len(up) < 50 or up[y_pooled].std() < 1e-8 or up[x_pooled].std() < 1e-8
+            or len(aw) < 50 or aw[y_within].std() < 1e-8 or aw[x_within].std() < 1e-8):
         return (np.nan, np.nan, np.nan, np.nan)
-    sub = sub.rename(columns={gene_col: "y", predictor: "x"})
     try:
-        m1 = smf.ols("y ~ x", data=sub).fit()
-        m2 = smf.ols("y ~ x + C(cancer_type)", data=sub).fit()
+        mu = up.rename(columns={y_pooled: "y", x_pooled: "x"})
+        ma = aw.rename(columns={y_within: "y", x_within: "x"})
+        m1 = smf.ols("y ~ x", data=mu).fit()
+        m2 = smf.ols("y ~ x", data=ma).fit()
         return (m1.params["x"], m1.pvalues["x"], m2.params["x"], m2.pvalues["x"])
     except Exception as exc:  # noqa: BLE001
-        log.warning("fit failed for %s: %s", gene_col, exc)
+        log.warning("fit failed for %s: %s", y_within, exc)
         return (np.nan, np.nan, np.nan, np.nan)
 
 
@@ -113,9 +132,13 @@ def main():
         "immune": immune[immune_col].reindex(expr.index),
         "CYT": cyt.reindex(expr.index),
     })
-    # z-score predictors within cancer type (remove lineage mean differences)
+    # z-score predictors within cancer type (lineage adjustment) AND pooled
+    # (global standardization, retaining between-type variance, for the
+    # unadjusted model)
     base["immune_z"] = _zscore_within(base, "immune", "cancer_type")
+    base["immune_zpooled"] = _zscore_pooled(base["immune"])
     base["CYT_z"] = _zscore_within(base, "CYT", "cancer_type")
+    base["CYT_zpooled"] = _zscore_pooled(base["CYT"])
 
     def evaluate(genes, label):
         rows = []
@@ -123,13 +146,18 @@ def main():
             if g not in expr.columns:
                 continue
             df = base.copy()
+            gp = _zscore_pooled(expr[g].reindex(df.index))
+            df[f"{g}__zpooled"] = gp
             df[g] = _zscore_within(pd.DataFrame({g: expr[g], "cancer_type": cancer}), g, "cancer_type")
-            bi_u, pi_u, bi_a, pi_a = _fit(df, g, "immune_z")
-            bc_u, pc_u, bc_a, pc_a = _fit(df, g, "CYT_z")
+            bi_u, pi_u, bi_a, pi_a = _fit(df, f"{g}__zpooled", "immune_zpooled",
+                                          g, "immune_z")
+            bc_u, pc_u, bc_a, pc_a = _fit(df, f"{g}__zpooled", "CYT_zpooled",
+                                          g, "CYT_z")
             rows.append({
                 "gene": g, "set": label,
                 "immune_beta_unadj": bi_u, "immune_p_unadj": pi_u,
                 "immune_beta_adj": bi_a, "immune_p_adj": pi_a,
+                "CYT_beta_unadj": bc_u, "CYT_p_unadj": pc_u,
                 "CYT_beta_adj": bc_a, "CYT_p_adj": pc_a,
                 "melanocyte_lineage": g in MELANOCYTE_LINEAGE,
             })
