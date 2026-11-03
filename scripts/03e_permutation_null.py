@@ -129,7 +129,7 @@ def run_analysis(ids_common: pd.Index, status: pd.Series, cand_genes: list[str],
     if lineage is not None:
         lin = lineage.reindex(ids_common).to_numpy()
         groups = [idx for idx in
-                  [np.where(lin == l)[0] for l in pd.unique(lin)]
+                  [np.where(lin == lab)[0] for lab in pd.unique(lin)]
                   if len(idx) > 1]
         log.info("[%s] within-lineage permutation over %d lineage groups",
                  tag, len(groups))

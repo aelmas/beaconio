@@ -94,7 +94,6 @@ def main():
         # Also save the fast-screen results with a _spearman suffix for reference
         fast_all = out / "beacon_edd_all_lineages_spearman.csv"
         if not fast_all.exists() and (out / "fast_screen_mrna.csv").exists():
-            import shutil
             # Back up the old Spearman all-lineages if it exists with old format
             old_all = out / "beacon_edd_all_lineages.csv.bak"
             if not old_all.exists():

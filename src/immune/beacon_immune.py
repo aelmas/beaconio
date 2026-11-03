@@ -22,7 +22,6 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
-from beacon_io.engine import BeaconSummary, beacon_fast, run_beacon_lineage
 from beacon_io.utils import fdr_correction, get_logger
 
 log = get_logger(__name__)

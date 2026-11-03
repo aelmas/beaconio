@@ -93,7 +93,7 @@ def _beacon_single_gene(
     dep_z = (dependency - dependency.mean()) / (dependency.std() + 1e-8)
     obs = np.column_stack([expr_z, dep_z])
 
-    with pm.Model() as model:
+    with pm.Model():
         # Priors
         mu = pm.Normal("mu", mu=0, sigma=2, shape=2)
         sigma = pm.HalfCauchy("sigma", beta=2.5, shape=2)
@@ -187,6 +187,7 @@ def run_beacon_lineage(
     n_jobs     : Number of parallel jobs (-1 = all CPUs).
     """
     from joblib import Parallel, delayed
+
     from beacon_io.utils import align_matrices
 
     expr, dep = align_matrices(expression, dependency)

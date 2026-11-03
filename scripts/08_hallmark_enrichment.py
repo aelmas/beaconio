@@ -24,6 +24,7 @@ import urllib.request
 from pathlib import Path
 
 import matplotlib
+
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
@@ -349,9 +350,9 @@ def main():
     plot_df = plot_df.head(12).iloc[::-1]  # top 12, reversed for horizontal bar
     colours = ["#d73027" if p < 0.05 else "#999999"
                for p in plot_df["fdr"]]
-    bars = ax.barh(range(len(plot_df)),
-                   -np.log10(plot_df["pvalue"].clip(lower=1e-30)),
-                   color=colours, edgecolor="white")
+    ax.barh(range(len(plot_df)),
+            -np.log10(plot_df["pvalue"].clip(lower=1e-30)),
+            color=colours, edgecolor="white")
     for i, (_, row) in enumerate(plot_df.iterrows()):
         sig_marker = "*" if row["fdr"] < 0.05 else ""
         ax.text(-np.log10(max(row["pvalue"], 1e-30)) + 0.05, i,

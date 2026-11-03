@@ -18,7 +18,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 
 from beacon_io.config import CFG
 from beacon_io.utils import ensure_dir, get_logger
-from data.depmap import load_cell_line_info, load_crispr, load_expression
+from data.depmap import load_crispr, load_expression
 from data.tcga import load_tcga_expression
 from immune.beacon_immune import differential_edd, evasion_correlated_edd
 from immune.deconvolution import (
@@ -73,7 +73,6 @@ def main():
     # ── D. Differential EDD (hot vs cold in DepMap cell lines) ─────────
     log.info("=== Differential EDD (BEACON MCMC) ===")
     crispr = load_crispr()
-    cell_info = load_cell_line_info()
 
     # Use ESTIMATE on DepMap expression for stratification
     depmap_estimate = run_estimate(depmap_expr)

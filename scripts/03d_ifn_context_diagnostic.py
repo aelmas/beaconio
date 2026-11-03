@@ -38,7 +38,6 @@ from data.depmap import load_cell_line_info, load_crispr, load_expression
 from immune.deconvolution import run_estimate
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from importlib import import_module
 
 log = get_logger("03d_ifn_diagnostic")
 

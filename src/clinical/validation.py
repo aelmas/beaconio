@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import numpy as np
 import pandas as pd
-from lifelines import CoxPHFitter, KaplanMeierFitter
+from lifelines import CoxPHFitter
 from lifelines.statistics import logrank_test
 from scipy import stats
 from sklearn.linear_model import LogisticRegressionCV
