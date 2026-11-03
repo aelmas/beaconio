@@ -208,6 +208,41 @@ rule tcga_tme_corroboration:
         """
 
 
+rule icb_benchmark_solid:
+    """Score the lineage-corrected solid-tumor signature on Hugo 2016 and
+    compute directional-AUC bootstrap CIs (Table S9)."""
+    input:
+        f"{OUTPUT}/immune_context_solid/differential_edd_solid_hot_vs_cold.csv",
+    output:
+        bench = f"{OUTPUT}/clinical/icb_biomarker_benchmark_solid.csv",
+        ci    = f"{OUTPUT}/clinical/icb_auc_bootstrap_ci.csv",
+    log:
+        f"{OUTPUT}/logs/05cd_icb_benchmark_solid.log",
+    shell:
+        """
+        (python scripts/05c_icb_benchmark_solid.py && \
+         python scripts/05d_icb_auc_ci.py) \
+            2>&1 | tee {log}
+        """
+
+
+rule icb_multicohort:
+    """Multi-cohort ICB benchmark and fixed-effects meta-analysis across
+    Hugo 2016 and Riaz 2017 (pre-treatment), with a random-gene background."""
+    input:
+        f"{OUTPUT}/immune_context_solid/differential_edd_solid_hot_vs_cold.csv",
+    output:
+        per_cohort = f"{OUTPUT}/clinical/icb_multicohort_auc.csv",
+        meta       = f"{OUTPUT}/clinical/icb_multicohort_meta.csv",
+    log:
+        f"{OUTPUT}/logs/05e_icb_multicohort.log",
+    shell:
+        """
+        python scripts/05e_icb_multicohort.py \
+            2>&1 | tee {log}
+        """
+
+
 # ── Step 04: Combination target discovery ────────────────────────────────────
 
 rule combination:

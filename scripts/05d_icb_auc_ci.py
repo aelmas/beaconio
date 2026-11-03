@@ -1,12 +1,17 @@
 #!/usr/bin/env python3
-"""Step 05d: Bootstrap confidence intervals for the ICB-benchmark AUCs.
+"""Step 05d: ICB AUC bootstrap-CI analysis (single-cohort variant).
 
-With only 4 responders / 24 non-responders in Hugo 2016, point AUCs are not
-interpretable without uncertainty. We compute stratified bootstrap 95% CIs for
-every biomarker's score-based AUC, on the SAME mean-expression scores used in
-the benchmark, so readers can see the CIs are very wide and that no biomarker
-ranking is statistically distinguishable. We report DIRECTIONAL AUC (no
-auto-flip) to avoid the undisclosed upward bias.
+SUPERSEDED by step 05e (icb_multicohort.py), which benchmarks both ICB
+cohorts (Hugo 2016 + Riaz 2017) using GEO series-matrix response labels,
+stratified bootstrap 95% CIs and a random-gene empirical null. Step 05e is
+the source of all manuscript ICB numbers; this script is kept only for
+legacy reproduction.
+
+We compute stratified bootstrap 95% CIs for every biomarker's score-based
+AUC, on the SAME mean-expression scores used in the benchmark, so reviewers
+can see the CIs are very wide and that no biomarker ranking is statistically
+distinguishable. We report DIRECTIONAL AUC (no auto-flip) to avoid the
+undisclosed upward bias.
 
 Output: analysis/out/clinical/icb_auc_bootstrap_ci.csv
 """

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Step 09: Real-tumor-microenvironment corroboration of the lineage-corrected
-solid-tumor immune-hot-specific hits.
+solid-tumor immune-hot-specific hits (addresses referee concerns C14/C5).
 
 Cell lines have no microenvironment, so the cell-line immune score is a
 tumor-cell-intrinsic proxy that co-varies with lineage. Here we ask whether
@@ -29,7 +29,6 @@ import sys
 from pathlib import Path
 
 import matplotlib
-
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
@@ -186,6 +185,7 @@ def main():
             continue
         c = "#d73027" if r["melanocyte_lineage"] else (
             "#1a9850" if not r["immune_associated_effectsize"] else "#4575b4")
+        xj = 1 + (i % 5) * 0.0
         ax.scatter(1, r["immune_beta_adj"], s=60, c=c, edgecolors="white", zorder=3)
         ax.annotate(r["gene"], (1.04, r["immune_beta_adj"]), fontsize=7, va="center")
     ax.set_xticks([0, 1])

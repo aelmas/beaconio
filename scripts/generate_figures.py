@@ -16,8 +16,8 @@ warnings.filterwarnings("ignore")
 import matplotlib
 
 matplotlib.use("Agg")
-import matplotlib.gridspec as gridspec
 import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -176,7 +176,7 @@ def fig2_differential_edd():
     ax = axes[1]
     top20 = diff[sig].reindex(diff[sig]["delta_rho"].abs().sort_values(ascending=False).index).head(20)
     colors = ["#d73027" if d < 0 else "#4575b4" for d in top20["delta_rho"]]
-    ax.barh(range(len(top20)), top20["delta_rho"], color=colors, edgecolor="white")
+    bars = ax.barh(range(len(top20)), top20["delta_rho"], color=colors, edgecolor="white")
     ax.set_yticks(range(len(top20)))
     ax.set_yticklabels(top20["gene"], fontsize=8)
     ax.invert_yaxis()
@@ -255,7 +255,7 @@ def fig4_survival():
 
     # Load expression + survival (reuse ensembl mapping)
     sys.path.insert(0, "src")
-    from data.tcga import load_tcga_clinical, load_tcga_survival
+    from data.tcga import load_tcga_survival, load_tcga_clinical
     survival = load_tcga_survival()
     clinical = load_tcga_clinical()
     clinical["sample_15"] = clinical.index.str[:15]
@@ -314,7 +314,7 @@ def fig4_survival():
         try:
             lr = logrank_test(T_h[valid_h], T_l[valid_l], E_h[valid_h], E_l[valid_l])
             pval = lr.p_value
-        except Exception:
+        except:
             pval = np.nan
 
         ax.set_title(f"{gene} - {cancer}\nHR={row['cox_hr']:.2f}, p={pval:.1e}", fontsize=10)
@@ -334,54 +334,67 @@ def fig4_survival():
 # Fig 5: ICB benchmark ROC / barplot
 # =========================================================================
 def fig5_icb_benchmark():
-    """Fig 5: directional AUC with bootstrap 95% CIs.
+    """Fig 5: directional AUC with bootstrap 95% CIs + random-gene nulls.
 
-    At n=28 / 4 responders no biomarker is statistically distinguishable; the
-    figure shows DIRECTIONAL AUCs (no auto-flip) with wide, overlapping
-    bootstrap CIs, making explicit that the cohort cannot adjudicate biomarker
-    performance and that BEACON-IO is not positioned as a response predictor.
+    Source: the multicohort benchmark (Hugo 2016 + Riaz 2017 pretreatment),
+    with response labels parsed from each GEO series matrix, stratified
+    bootstrap 95% CIs and an empirical random-gene null per cohort. No
+    biomarker -- established or BEACON-IO -- exceeds the null threshold at
+    these sample sizes; BEACON-IO is a target-nomination framework, not a
+    response predictor.
     """
-    log.info("Fig 5: ICB benchmark (directional AUC + bootstrap CI)")
-    ci_path = OUT / "clinical/icb_auc_bootstrap_ci.csv"
-    if not ci_path.exists():
-        log.warning("No bootstrap-CI data, skipping Fig 5")
+    log.info("Fig 5: ICB benchmark (two cohorts, directional AUC + CI + null)")
+    auc_path = OUT / "clinical/icb_multicohort_auc.csv"
+    if not auc_path.exists():
+        log.warning("No multicohort AUC data, skipping Fig 5")
         return
-    ci = pd.read_csv(ci_path).sort_values("auc_directional")
-
-    fig, ax = plt.subplots(figsize=(9, 5))
-    y = np.arange(len(ci))
-    colours = ["#d73027" if "BEACON-IO" in b else "#4575b4" for b in ci["biomarker"]]
-    err_low = (ci["auc_directional"] - ci["ci95_low"]).values
-    err_high = (ci["ci95_high"] - ci["auc_directional"]).values
-    ax.errorbar(ci["auc_directional"], y, xerr=[err_low, err_high], fmt="none",
-                ecolor="#555555", elinewidth=1.2, capsize=4, zorder=1)
-    ax.scatter(ci["auc_directional"], y, c=colours, s=90, zorder=2, edgecolors="white")
-    for i, (_, r) in enumerate(ci.iterrows()):
-        ax.text(r["ci95_high"] + 0.02, i,
-                f"{r['auc_directional']:.2f} [{r['ci95_low']:.2f}, {r['ci95_high']:.2f}]  (n={int(r['n_genes'])})",
-                va="center", fontsize=8)
-    ax.axvline(0.5, ls="--", c="grey", lw=0.9, label="Chance (AUC = 0.5)")
-    ax.set_yticks(y)
-    ax.set_yticklabels(ci["biomarker"], fontsize=9)
-    ax.set_xlabel("Directional AUC (no auto-flip) with bootstrap 95% CI")
-    ax.set_xlim(0, 1.15)
-    ax.set_title(
-        "ICB response prediction is uninformative at this sample size\n"
-        "(Hugo 2016 melanoma, n=28; 4 R / 24 NR)",
-        fontsize=11, fontweight="bold")
-    ax.text(0.02, 0.02,
-            "All 95% CIs overlap and span chance: no biomarker is\n"
-            "statistically distinguishable. BEACON-IO (red) is a target-\n"
-            "nomination framework, not a response predictor.",
-            transform=ax.transAxes, ha="left", va="bottom", fontsize=8, style="italic",
-            bbox=dict(boxstyle="round,pad=0.3", facecolor="#fff5e6",
-                      edgecolor="#d73027", linewidth=0.8))
-    ax.legend(fontsize=9, loc="lower right")
-    plt.tight_layout()
+    per = pd.read_csv(auc_path)
+    cohorts = [("Hugo_2016", "Hugo 2016 anti-PD-1 (n=28; 15 R / 13 NR)"),
+               ("Riaz_2017_Pre", "Riaz 2017 pretreatment anti-PD-1 (n=33; 10 R / 23 NR)")]
+    fig, axes = plt.subplots(1, 2, figsize=(14, 5.2), sharey=False)
+    for ax, (coh, label) in zip(axes, cohorts):
+        sub = per[per["cohort"] == coh].sort_values("auc_directional")
+        y = np.arange(len(sub))
+        colours = ["#d73027" if "BEACON-IO" in b else "#4575b4"
+                   for b in sub["biomarker"]]
+        err_low = (sub["auc_directional"] - sub["ci95_low"]).values
+        err_high = (sub["ci95_high"] - sub["auc_directional"]).values
+        ax.errorbar(sub["auc_directional"], y, xerr=[err_low, err_high],
+                    fmt="none", ecolor="#555555", elinewidth=1.2, capsize=4,
+                    zorder=1)
+        ax.scatter(sub["auc_directional"], y, c=colours, s=90, zorder=2,
+                   edgecolors="white")
+        # Empirical random-gene null band: significant requires
+        # |AUC - 0.5| >= null_p95_abs_dev
+        for i, (_, r) in enumerate(sub.iterrows()):
+            thr = r["null_p95_abs_dev"]
+            ax.plot([0.5 - thr, 0.5 + thr], [i, i], c="#999999", lw=5,
+                    alpha=0.25, zorder=0)
+        for i, (_, r) in enumerate(sub.iterrows()):
+            ax.text(r["ci95_high"] + 0.02, i,
+                    f"{r['auc_directional']:.2f} "
+                    f"[{r['ci95_low']:.2f}, {r['ci95_high']:.2f}]"
+                    + (f"  p={r['p_empirical_vs_random']:.2f}"
+                       if pd.notna(r["p_empirical_vs_random"]) else ""),
+                    va="center", fontsize=8)
+        ax.axvline(0.5, ls="--", c="grey", lw=0.9, label="Chance (AUC = 0.5)")
+        ax.set_yticks(y)
+        ax.set_yticklabels(sub["biomarker"], fontsize=9)
+        ax.set_xlabel("Directional AUC (no auto-flip), bootstrap 95% CI")
+        ax.set_xlim(0, 1.25)
+        ax.set_title(label, fontsize=11, fontweight="bold")
+    axes[0].axvline(0.5, ls="--", c="grey", lw=0.9)
+    fig.text(0.5, 0.005,
+             "Grey bands: empirical random-gene null (95th percentile of "
+             "|AUC-0.5|). No signature, established or BEACON-IO (red), "
+             "exceeds its null in either cohort: these sample sizes cannot "
+             "adjudicate biomarker performance.",
+             ha="center", va="bottom", fontsize=9, style="italic", color="#7a2e20")
+    plt.tight_layout(rect=(0, 0.045, 1, 1))
     fig.savefig(FIG / "fig5_icb_benchmark.pdf")
     fig.savefig(FIG / "fig5_icb_benchmark.png")
     plt.close(fig)
-    log.info("  Saved fig5_icb_benchmark")
+    log.info("  Saved fig5_icb_benchmark (two-cohort version)")
 
 
 # =========================================================================
@@ -410,11 +423,19 @@ def fig6_evidence_integration(evidence_path: Path | None = None,
     gs = gridspec.GridSpec(1, 2, width_ratios=[1, 2.5], wspace=0.05)
 
     # 6A: Composite score barplot
+    NOMINATED = {"TEAD3", "CDH1", "HIC2", "SEMA4B"}
     ax1 = fig.add_subplot(gs[0])
     colors = plt.cm.YlOrRd(top["composite_score"] / top["composite_score"].max())
-    ax1.barh(range(len(top)), top["composite_score"], color=colors, edgecolor="white")
+    bars = ax1.barh(range(len(top)), top["composite_score"], color=colors,
+                    edgecolor="white")
+    for b, (_, row) in zip(bars, top.iterrows()):
+        if row["gene"] in NOMINATED:
+            b.set_edgecolor("#2166ac")
+            b.set_linewidth(1.8)
     ax1.set_yticks(range(len(top)))
-    ax1.set_yticklabels(top["gene"], fontsize=8)
+    ax1.set_yticklabels(
+        [f"$\\bf{{{g.replace('HIC2','HIC2')}}}$" if g in NOMINATED else g
+         for g in top["gene"]], fontsize=8)
     ax1.invert_yaxis()
     ax1.set_xlabel("Composite Score")
     ax1.set_title("A. Composite Score", fontweight="bold")

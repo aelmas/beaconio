@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Step 03c: Coherent posterior-difference test for differential EDD.
+"""Step 03c: Coherent posterior-difference test for differential EDD (addresses
+referee concern C1).
 
 The original differential test applied a frequentist Fisher-z transform to the
 posterior MEDIANS of rho_hot and rho_cold, plugging in the full group n as the

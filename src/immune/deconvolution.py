@@ -14,10 +14,13 @@ Supported methods:
 
 from __future__ import annotations
 
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 from scipy.cluster.hierarchy import fcluster, linkage
 
+from beacon_io.config import CFG
 from beacon_io.utils import get_logger
 
 log = get_logger(__name__)

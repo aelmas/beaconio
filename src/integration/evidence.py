@@ -147,7 +147,7 @@ def _compute_composite(master: pd.DataFrame) -> pd.DataFrame:
     specific). Each tier is converted to a [0,1] percentile (1.0 = strongest
     evidence) computed over the genes that HAVE that tier.
 
-    Missing tiers are treated as missing: rather than imputing the
+    Missing tiers are treated as missing (C18 fix): rather than imputing the
     worst rank (which conflated "no evidence" with "negative evidence" and
     capped the composite at the sum of populated-tier weights), the composite
     for each gene is the weight-normalized mean of the tiers it possesses, so

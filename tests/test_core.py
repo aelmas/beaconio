@@ -1,7 +1,8 @@
 """Fast unit tests for BEACON-IO core utilities and evidence integration.
 
-These tests are deterministic and fast (no MCMC); the slow MCMC recovery
-test lives in test_mcmc.py.
+Addresses referee concern C19(d): the CI advertised a pytest suite but no
+tests/ directory existed. These tests are deterministic and fast (no MCMC);
+the slow MCMC recovery test lives in test_mcmc.py.
 """
 
 import sys
@@ -52,7 +53,7 @@ def test_e2_is_hot_specific_directional():
 
 def test_composite_in_unit_interval():
     """Composite score must lie in [0,1] after renormalization over populated
-    tiers (unpopulated tiers excluded from the mean), not be capped by unpopulated-tier weights."""
+    tiers (the C18 fix), not be capped by unpopulated-tier weights."""
     from integration.evidence import compile_evidence
 
     edd = pd.DataFrame({

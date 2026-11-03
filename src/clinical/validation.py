@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import numpy as np
 import pandas as pd
-from lifelines import CoxPHFitter
+from lifelines import CoxPHFitter, KaplanMeierFitter
 from lifelines.statistics import logrank_test
 from scipy import stats
 from sklearn.linear_model import LogisticRegressionCV
@@ -106,20 +106,31 @@ def tcga_survival_analysis(
 def build_beacon_io_signature(
     edd_results: pd.DataFrame,
     top_n: int = 50,
+    immune_specific_only: bool = True,
 ) -> list[str]:
-    """Select top BEACON-IO genes for a predictive signature.
+    """Select top BEACON-IO genes for an immune-hot-specific signature.
 
     Prioritises genes that are:
       - Significant EDD (FDR < 0.05, rho < -0.25)
-      - Immune-specific (large |delta_rho| between hot/cold)
-      - Druggable
+      - Immune-hot-specific (most negative delta_rho between hot and cold)
+
+    Ranking by ``|delta_rho|`` gives immune-**cold**-specific genes
+    (delta_rho > 0) equal credit, which is the same defect corrected in the
+    E2 evidence tier: on the solid-tumour results it admitted 19 cold genes
+    into a 32-gene "immune-hot" signature. ``immune_specific_only=True``
+    (the default) restricts to negative delta_rho. Pass False only to
+    reproduce the earlier, uncorrected behaviour.
     """
     sig = edd_results.copy()
     if "fdr" in sig.columns:
         sig = sig[sig["fdr"] < 0.05]
     if "delta_rho" in sig.columns:
-        sig["abs_delta"] = sig["delta_rho"].abs()
-        sig = sig.sort_values("abs_delta", ascending=False)
+        if immune_specific_only:
+            sig = sig[sig["delta_rho"] < 0].sort_values("delta_rho")
+        else:
+            sig = sig.assign(abs_delta=sig["delta_rho"].abs()).sort_values(
+                "abs_delta", ascending=False
+            )
     elif "rho_posterior_median" in sig.columns:
         sig = sig.sort_values("rho_posterior_median")
     return sig["gene"].head(top_n).tolist()

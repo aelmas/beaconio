@@ -1,0 +1,7 @@
+biomarker,n_cohorts,meta_auc,se,ci95_low,ci95_high,cochran_q,i2_percent,per_cohort_auc
+"BEACON-IO (|drho|, uncorrected)",2,0.603,0.073,0.459,0.746,2.61,61.7,Hugo_2016=0.708; Riaz_2017_Pre=0.470
+IFNg-GEP (Ayers),2,0.577,0.078,0.423,0.73,0.65,0.0,Hugo_2016=0.513; Riaz_2017_Pre=0.639
+PD-L1 (CD274),2,0.573,0.078,0.42,0.726,0.024,0.0,Hugo_2016=0.585; Riaz_2017_Pre=0.561
+IMPRES,2,0.569,0.078,0.416,0.721,1.194,16.3,Hugo_2016=0.482; Riaz_2017_Pre=0.652
+Cytolytic (CYT),2,0.53,0.077,0.378,0.682,2.362,57.7,Hugo_2016=0.410; Riaz_2017_Pre=0.648
+BEACON-IO (solid),2,0.52,0.071,0.38,0.659,5.501,81.8,Hugo_2016=0.687; Riaz_2017_Pre=0.352

@@ -1,0 +1,6 @@
+biomarker,n_genes,auc_directional,ci95_low,ci95_high,ci_width
+BEACON-IO (solid),13,0.636,0.421,0.831,0.41
+PD-L1 (CD274),1,0.585,0.359,0.795,0.436
+IFNg-GEP (Ayers),18,0.564,0.338,0.769,0.431
+IMPRES,15,0.451,0.226,0.672,0.446
+Cytolytic (CYT),2,0.385,0.185,0.59,0.405
