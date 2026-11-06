@@ -17,8 +17,11 @@ date-released: "2026-11-06"
 license: MIT
 identifiers:
   - type: doi
+    value: 10.5281/zenodo.24014867
+    description: "Version DOI (v0.1.2)"
+  - type: doi
     value: 10.5281/zenodo.23940460
-    description: "Concept DOI; resolves to the latest archived release (v0.1.2)"
+    description: "Concept DOI; resolves to the latest archived release"
 repository-code: "https://github.com/aelmas/beaconio"
 keywords:
   - cancer genomics
