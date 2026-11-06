@@ -12,9 +12,13 @@ authors:
   - family-names: Elmas
     given-names: Abdulkadir
     orcid: "https://orcid.org/0000-0002-7999-5770"
-version: "0.1.1"
-date-released: "2026-10-26"
+version: "0.1.2"
+date-released: "2026-11-06"
 license: MIT
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.23940460
+    description: "Concept DOI; resolves to the latest archived release (v0.1.2)"
 repository-code: "https://github.com/aelmas/beaconio"
 keywords:
   - cancer genomics
