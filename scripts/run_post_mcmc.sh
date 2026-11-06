@@ -10,19 +10,22 @@ set -euo pipefail
 
 PY=/opt/anaconda3/envs/taskweaver/bin/python
 
-echo "=== [1/5] Hallmark enrichment on corrected solid-tumour targets ==="
+echo "=== [1/6] Hallmark enrichment on corrected solid-tumour targets ==="
 $PY scripts/08_hallmark_enrichment.py
 
-echo "=== [2/5] ICB benchmark with corrected solid-tumour signature ==="
+echo "=== [2/6] ICB benchmark with corrected solid-tumour signature ==="
 $PY scripts/05c_icb_benchmark_solid.py
 
-echo "=== [3/5] Evidence integration with corrected differential EDD ==="
+echo "=== [3/6] Evidence integration with corrected differential EDD ==="
 $PY scripts/07_integration.py \
     --diff-edd-path analysis/out/immune_context_solid/differential_edd_solid_hot_vs_cold.csv \
     --suffix _solid \
     --exclude-heme-lineages
 
-echo "=== [4/5] Regenerate Fig 5 (ICB benchmark, both signatures) ==="
+echo "=== [4/6] Weight-sensitivity analysis of the integration composite ==="
+$PY scripts/07b_weight_sensitivity.py
+
+echo "=== [5/6] Regenerate Fig 5 (ICB benchmark, both signatures) ==="
 $PY - <<'PY'
 import sys, importlib.util
 sys.path.insert(0, 'src'); sys.path.insert(0, 'scripts')
@@ -31,7 +34,7 @@ m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
 m.fig5_icb_benchmark()
 PY
 
-echo "=== [5/5] Regenerate Fig 6 (two versions: all-lineages and solid-only) ==="
+echo "=== [6/6] Regenerate Fig 6 (two versions: all-lineages and solid-only) ==="
 $PY - <<'PY'
 import sys, importlib.util
 from pathlib import Path

@@ -153,6 +153,7 @@ python scripts/04_combination_targets.py
 python scripts/05_clinical_validation.py
 python scripts/06_singlecell.py
 python scripts/07_integration.py
+python scripts/07b_weight_sensitivity.py   # ranking robustness to tier weights
 
 # Dry run
 snakemake -n
